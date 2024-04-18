@@ -197,6 +197,7 @@ router.use("/:dentistId/appointments", appointmentRouter);
 router
   .route(`/`)
   .get(getDentists)
+  // .post(createDentist);
   .post(protect, authorize("admin"), createDentist);
 
 router
