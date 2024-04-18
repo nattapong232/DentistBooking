@@ -1,18 +1,18 @@
 const express = require("express");
 const {
-  getHospitals,
-  getHospital,
-  createHospital,
-  updateHospital,
-  deleteHospital,
+  getDentists,
+  getDentist,
+  createDentist,
+  updateDentist,
+  deleteDentist,
   getVacCenters,
-} = require(`../controllers/hospitals`);
+} = require(`../controllers/dentists`);
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Hospital:
+ *     Dentist:
  *       type: object
  *       required:
  *         - name
@@ -21,14 +21,14 @@ const {
  *         id:
  *           type: string
  *           format: uuid
- *           description: The auto-generated id of the hospital
+ *           description: The auto-generated id of the dentist
  *           example: d290f1ee-6c54-4b01-90e6-d701748f0851
  *         ลําดับ:
  *           type: string
  *           description: Ordinal number
  *         name:
  *           type: string
- *           description: Hospital name
+ *           description: Dentist name
  *         address:
  *           type: string
  *           description: House No., Street, Road
@@ -50,7 +50,7 @@ const {
  *       example:
  *         id: 609bda561452242d88d36e37
  *         ลําดับ: )*)
- *         name: Happy Hospital
+ *         name: Happy Dentist
  *         address: 121 ถ.สุขุมวิท
  *         district: บางนา
  *         province: กรุงเทพมหานคร
@@ -62,129 +62,129 @@ const {
 /**
  * @swagger
  * tags:
- *   name: Hospitals
- *   description: The hospitals managing API
+ *   name: Dentists
+ *   description: The dentists managing API
  */
 
 /**
  * @swagger
- * /hospitals:
+ * /dentists:
  *   get:
- *     summary: Returns the list of all the hospitals
+ *     summary: Returns the list of all the dentists
  *     tags:
- *       - Hospitals
+ *       - Dentists
  *     responses:
  *       '200':
- *         description: The list of the hospitals
+ *         description: The list of the dentists
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Hospital'
+ *                 $ref: '#/components/schemas/Dentist'
  */
 
 /**
  * @swagger
- * /hospitals/{id}:
+ * /dentists/{id}:
  *   get:
- *     summary: Get the hospital by id
+ *     summary: Get the dentist by id
  *     tags:
- *       - Hospitals
+ *       - Dentists
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The hospital id
+ *         description: The dentist id
  *     responses:
  *       '200':
- *         description: The hospital description by id
+ *         description: The dentist description by id
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Hospital'
+ *               $ref: '#/components/schemas/Dentist'
  *       '404':
- *         description: The hospital was not found
+ *         description: The dentist was not found
  */
 
 /**
  * @swagger
- * /hospitals:
+ * /dentists:
  *   post:
- *     summary: Create a new hospital
+ *     summary: Create a new dentist
  *     tags:
- *       - Hospitals
+ *       - Dentists
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Hospital'
+ *             $ref: '#/components/schemas/Dentist'
  *     responses:
  *       '201':
- *         description: The hospital was successfully created
+ *         description: The dentist was successfully created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Hospital'
+ *               $ref: '#/components/schemas/Dentist'
  *       '500':
  *         description: Some server error
  */
 
 /**
  * @swagger
- * /hospitals/{id}:
+ * /dentists/{id}:
  *   put:
- *     summary: Update the hospital by the id
+ *     summary: Update the dentist by the id
  *     tags:
- *       - Hospitals
+ *       - Dentists
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The hospital id
+ *         description: The dentist id
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Hospital'
+ *             $ref: '#/components/schemas/Dentist'
  *     responses:
  *       '200':
- *         description: The hospital was updated
+ *         description: The dentist was updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Hospital'
+ *               $ref: '#/components/schemas/Dentist'
  *       '404':
- *         description: The hospital was not found
+ *         description: The dentist was not found
  *       '500':
  *         description: Some error happened
  */
 
 /**
  * @swagger
- * /hospitals/{id}:
+ * /dentists/{id}:
  *   delete:
- *     summary: Remove the hospital by id
+ *     summary: Remove the dentist by id
  *     tags:
- *       - Hospitals
+ *       - Dentists
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The hospital id
+ *         description: The dentist id
  *     responses:
  *       '200':
- *         description: The hospital was deleted
+ *         description: The dentist was deleted
  *       '404':
- *         description: The hospital was not found
+ *         description: The dentist was not found
  */
 
 const appointmentRouter = require("./appointments");
@@ -193,19 +193,19 @@ const router = express.Router();
 
 const { protect, authorize } = require("../middleware/auth");
 
-router.use("/:hospitalId/appointments", appointmentRouter);
+router.use("/:dentistId/appointments", appointmentRouter);
 
 router.route(`/vacCenters`).get(getVacCenters);
 
 router
   .route(`/`)
-  .get(getHospitals)
-  .post(protect, authorize("admin"), createHospital);
+  .get(getDentists)
+  .post(protect, authorize("admin"), createDentist);
 
 router
   .route(`/:id`)
-  .get(getHospital)
-  .put(protect, authorize("admin"), updateHospital)
-  .delete(protect, authorize("admin"), deleteHospital);
+  .get(getDentist)
+  .put(protect, authorize("admin"), updateDentist)
+  .delete(protect, authorize("admin"), deleteDentist);
 
 module.exports = router;
