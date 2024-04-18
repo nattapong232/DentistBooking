@@ -5,7 +5,6 @@ const {
   createDentist,
   updateDentist,
   deleteDentist,
-  getVacCenters,
 } = require(`../controllers/dentists`);
 
 /**
@@ -194,8 +193,6 @@ const router = express.Router();
 const { protect, authorize } = require("../middleware/auth");
 
 router.use("/:dentistId/appointments", appointmentRouter);
-
-router.route(`/vacCenters`).get(getVacCenters);
 
 router
   .route(`/`)

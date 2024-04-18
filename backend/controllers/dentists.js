@@ -1,7 +1,5 @@
 const Dentist = require("../models/Dentist");
 
-const vacCenter = require("../models/VacCenter");
-
 //@desc     Get all dentists
 //@route    GET /api/v1/dentists
 //@access   Public
