@@ -32,7 +32,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:5000/api/v1",
+        url: "http://localhost:5001/api/v1",
       },
     ],
   },
@@ -79,7 +79,7 @@ app.use("/api/v1/dentists", dentists);
 app.use("/api/v1/auth", auth);
 app.use("/api/v1/appointments", appointments);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const server = app.listen(
   PORT,
   console.log(

@@ -41,7 +41,7 @@ exports.getAppointments = async (req, res, next) => {
   }
 };
 
-//@desc     Get one appointments
+//@desc     Get one appointment
 //@route    Get /api/v1/appointments/:id
 //@access   Public
 exports.getAppointment = async (req, res, next) => {
@@ -73,44 +73,38 @@ exports.getAppointment = async (req, res, next) => {
 
 //@desc     Add single appointment
 //@route    POST /api/v1/dentists/:dentistId/appointments/
-//@access   Public
+//@access   Private
 exports.addAppointment = async (req, res, next) => {
-  try {
-    req.body.dentist = req.params.dentistId;
+    try {
+        // Check if the user already has an active appointment
+        const existingAppointment = await Appointment.findOne({ user: req.user.id });
 
-    console.log(req.params.dentistId);
+        // If an appointment exists, prevent creating a new one
+        if (existingAppointment) {
+            return res.status(400).json({
+                success: false,
+                message: "User already has an active appointment"
+            });
+        }
 
-    const dentist = await Dentist.findById(req.params.dentistId);
+        // Proceed to create a new appointment if no existing one is found
+        const appointment = await Appointment.create({
+            apptDate: req.body.apptDate,
+            user: req.user.id,
+            dentist: req.params.dentistId
+        });
 
-    if (!dentist) {
-      return res.status(404).json({
-        success: false,
-        message: `No dentist with the id of ${req.params.dentistId}`,
-      });
+        res.status(201).json({
+            success: true,
+            data: appointment
+        });
+    } catch (err) {
+        console.log(err.stack);
+        return res.status(500).json({
+            success: false,
+            message: "Cannot create appointment"
+        });
     }
-
-    req.body.user = req.user.id;
-    const existedAppointments = await Appointment.find({ user: req.user.id });
-    if (existedAppointments.length >= 3 && req.user.role !== "admin") {
-      return res.status(400).json({
-        success: false,
-        message: `The user with ID ${req.user.id} is not authorized to delete this appointment`,
-      });
-    }
-
-    const appointment = await Appointment.create(req.body);
-
-    res.status(200).json({
-      success: true,
-      data: appointment,
-    });
-  } catch (err) {
-    console.log(err.stack);
-    return res.status(500).json({
-      success: false,
-      message: `Cannot create appointment`,
-    });
-  }
 };
 
 //@desc     Update appointment
