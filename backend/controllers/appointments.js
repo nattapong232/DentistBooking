@@ -1,5 +1,9 @@
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 const Appointment = require("../models/Appointment");
 const Dentist = require("../models/Dentist");
+
+// const Mail = require("../mail");
 
 //@desc     Get all appointments
 //@route    Get /api/v1/appointments
@@ -75,36 +79,68 @@ exports.getAppointment = async (req, res, next) => {
 //@route    POST /api/v1/dentists/:dentistId/appointments/
 //@access   Private
 exports.addAppointment = async (req, res, next) => {
-    try {
-        // Check if the user already has an active appointment
-        const existingAppointment = await Appointment.findOne({ user: req.user.id });
+  try {
+    // Check if the user already has an active appointment
+    const existingAppointment = await Appointment.findOne({
+      user: req.user.id,
+    });
 
-        // If an appointment exists, prevent creating a new one
-        if (existingAppointment) {
-            return res.status(400).json({
-                success: false,
-                message: "User already has an active appointment"
-            });
-        }
-
-        // Proceed to create a new appointment if no existing one is found
-        const appointment = await Appointment.create({
-            apptDate: req.body.apptDate,
-            user: req.user.id,
-            dentist: req.params.dentistId
-        });
-
-        res.status(201).json({
-            success: true,
-            data: appointment
-        });
-    } catch (err) {
-        console.log(err.stack);
-        return res.status(500).json({
-            success: false,
-            message: "Cannot create appointment"
-        });
+    // If an appointment exists, prevent creating a new one
+    if (existingAppointment) {
+      return res.status(400).json({
+        success: false,
+        message: "User already has an active appointment",
+      });
     }
+
+    // Proceed to create a new appointment if no existing one is found
+    const appointment = await Appointment.create({
+      apptDate: req.body.apptDate,
+      user: req.user.id,
+      dentist: req.params.dentistId,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: appointment,
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587, // SMTP port for TLS/STARTTLS
+      secure: false, // Use TLS
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USERNAME,
+      to: ["waranthorn_c@outlook.com"],
+      subject: "Appointment Confirmation",
+      text: "Your appointment.", // Consider using `html` for HTML formatted emails
+    };
+    // Async function to send an email
+    const sendMail = async (transporter, mailOptions) => {
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log("Sent");
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    // Execute the sendMail function
+    sendMail(transporter, mailOptions);
+  } catch (err) {
+    console.log(err.stack);
+    return res.status(500).json({
+      success: false,
+      message: "Cannot create appointment",
+    });
+  }
 };
 
 //@desc     Update appointment
