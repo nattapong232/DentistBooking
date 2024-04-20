@@ -117,13 +117,19 @@ exports.addAppointment = async (req, res, next) => {
       },
     });
 
+    const userDetail = await User.findOne({
+      email: req.user.email,
+    });
+
+    req.dentist = await Dentist.findById(req.params.dentistId);
+
     const mailOptions = {
       from: '"Laewtae Dental Clinic 🦷" <evilpickle.go2.isef@gmail.com>',
-      to: ["waranthorn_c@outlook.com"],
+      to: userDetail.email,
       subject: "Dental Appointment Confirmation",
-      html: `<h2>Dear Khun ${appointment.user}</h2>
+      html: `<h2>Dear Khun ${req.user.name}</h2>
       <br>
-      <h3>Your appointment on ${appointment.apptDate} with ${appointment.dentist} has been confirmed.</h3>
+      <h3>Your appointment on ${appointment.apptDate} with ${req.dentist.name} has been confirmed.</h3>
       <br>
       <b>Best regard</b>
       <br>
