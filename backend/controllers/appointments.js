@@ -2,6 +2,7 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 const Appointment = require("../models/Appointment");
 const Dentist = require("../models/Dentist");
+const User = require("../models/User");
 
 // const Mail = require("../mail");
 
@@ -117,10 +118,16 @@ exports.addAppointment = async (req, res, next) => {
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_USERNAME,
+      from: '"Laewtae Dental Clinic 🦷" <evilpickle.go2.isef@gmail.com>',
       to: ["waranthorn_c@outlook.com"],
-      subject: "Appointment Confirmation",
-      text: "Your appointment.", // Consider using `html` for HTML formatted emails
+      subject: "Dental Appointment Confirmation",
+      html: `<h2>Dear Khun ${appointment.user}</h2>
+      <br>
+      <h3>Your appointment on ${appointment.apptDate} with ${appointment.dentist} has been confirmed.</h3>
+      <br>
+      <b>Best regard</b>
+      <br>
+      <b>Laewtae Dental Clinic</b>`,
     };
     // Async function to send an email
     const sendMail = async (transporter, mailOptions) => {
