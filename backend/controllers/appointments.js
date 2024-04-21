@@ -1,10 +1,6 @@
-const nodemailer = require("nodemailer");
-require("dotenv").config();
 const Appointment = require("../models/Appointment");
 const Dentist = require("../models/Dentist");
-const User = require("../models/User");
-
-// const Mail = require("../mail");
+// const User = require("../models/User");
 
 //@desc     Get all appointments
 //@route    Get /api/v1/appointments
@@ -101,52 +97,17 @@ exports.addAppointment = async (req, res, next) => {
       dentist: req.params.dentistId,
     });
 
+    req.appointment = appointment;
+    req.dentist = await Dentist.findById(req.params.dentistId);
+
+    console.log("Create booking successfully");
+
     res.status(201).json({
       success: true,
       data: appointment,
     });
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      port: 587, // SMTP port for TLS/STARTTLS
-      secure: false, // Use TLS
-      auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    const userDetail = await User.findOne({
-      email: req.user.email,
-    });
-
-    req.dentist = await Dentist.findById(req.params.dentistId);
-
-    const mailOptions = {
-      from: '"Laewtae Dental Clinic 🦷" <evilpickle.go2.isef@gmail.com>',
-      to: userDetail.email,
-      subject: "Dental Appointment Confirmation",
-      html: `<h2>Dear Khun ${req.user.name}</h2>
-      <br>
-      <h3>Your appointment on ${appointment.apptDate} with ${req.dentist.name} has been confirmed.</h3>
-      <br>
-      <b>Best regard</b>
-      <br>
-      <b>Laewtae Dental Clinic</b>`,
-    };
-    // Async function to send an email
-    const sendMail = async (transporter, mailOptions) => {
-      try {
-        await transporter.sendMail(mailOptions);
-        console.log("Sent");
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    // Execute the sendMail function
-    sendMail(transporter, mailOptions);
+    next();
   } catch (err) {
     console.log(err.stack);
     return res.status(500).json({
@@ -184,7 +145,12 @@ exports.updateAppointment = async (req, res, next) => {
       runValidators: true,
     });
 
-    res.status(200).json({ success: true, data: appointment });
+    req.appointment = appointment;
+    req.dentist = await Dentist.findById(req.appointment.dentist.toString());
+
+    res.status(200).json({ success: true, data: req.appointment });
+
+    next();
   } catch (err) {
     console.log(err.stack);
     return res

@@ -11,14 +11,26 @@ const router = express.Router({ mergeParams: true });
 
 const { protect, authorize } = require("../middleware/auth");
 
+const { sendConfirmationEmail } = require("../middleware/mail");
+
 router
   .route("/")
   .get(protect, getAppointments)
-  .post(protect, authorize("admin", "user"), addAppointment);
+  .post(
+    protect,
+    authorize("admin", "user"),
+    addAppointment,
+    sendConfirmationEmail
+  );
 router
   .route("/:id")
   .get(protect, getAppointment)
-  .put(protect, authorize("admin", "user"), updateAppointment)
+  .put(
+    protect,
+    authorize("admin", "user"),
+    updateAppointment,
+    sendConfirmationEmail
+  )
   .delete(protect, authorize("admin", "user"), deleteAppointment);
 
 module.exports = router;
