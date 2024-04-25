@@ -1,0 +1,69 @@
+@startuml
+left to right direction
+package "Laewtae"{
+    class "<<Application>>\nLaewtaeService" as LaewtaeService{}
+
+    class "<<Resource>>\nDentists" as ResourceDentists{
+        <<GET>> +getDentists(): Dentist
+        <<POST>> +createDentist(): Dentist
+    }
+
+    class "<<Resource>>\nDentist" as ResourceDentist {
+        <<GET>> +getDentist(): Dentist
+        <<PUT>> +updateDentist(): Dentist
+        <<DELETE>> +deleteDentist(): void
+    }
+
+    class "<<Representation>>\nDentist" as RepresentationDentist {
+        -name
+        -experience
+        -area
+    }
+
+    class "<<Resource>>\nBooking" as ResourceBooking {
+        <<GET>> +getBooking(): Booking
+        <<PUT>> +updateBooking(): Booking
+        <<DELETE>> +deleteBooking(): void
+    }
+
+    class "<<Representation>>\nBooking" as RepresentationBooking {
+        -appDate
+        -user
+        -dentist
+    }
+
+
+    class "<<Resource>>\nAuthentication" as ResourceAuthentication {
+
+    }
+    
+        class "<<Resource>>\nAuthentication" as ResourceAuthentication {
+        <<GET>> +logout(): Logout
+
+    }
+    
+    
+    class "<<Representation>>\nUser" as RepresentationUser {
+        -name
+        -tel
+        -email
+        -role
+        -password
+    }
+
+
+}
+
+LaewtaeService ..> ResourceDentists:"/dentists\n<<Path>>"
+ResourceDentists ..> ResourceDentist: "/{dentistId}\n<<Path>>"
+
+
+ResourceDentist ..> RepresentationDentist: "<<use>>"
+
+LaewtaeService ..> ResourceBooking:"/bookings\n<<Path>>"
+ResourceBooking ..> RepresentationBooking: "<<use>>"
+
+LaewtaeService ..> ResourceAuthentication:"/auth\n<<Path>>"
+ResourceAuthentication ..> RepresentationUser: "<<use>>"
+
+@enduml
