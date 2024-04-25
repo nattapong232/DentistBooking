@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "b5049d0b-0c7e-4de8-ba9f-be96f1934b0e",
+		"_postman_id": "d51a3e56-57b6-4691-84e2-c49ec479e47c",
 		"name": "DentistBooking",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "32557573"
+		"_exporter_id": "32558863"
 	},
 	"item": [
 		{
@@ -23,7 +23,7 @@
 									"const response = pm.response.json();\r",
 									"const new_dentist_id = response.data.id;\r",
 									"\r",
-									"// console.log(new_dentist_id);\r",
+									"// console.log(new_hospital_id);\r",
 									"pm.globals.set(\"global_dentist_ID\",new_dentist_id);"
 								],
 								"type": "text/javascript",
@@ -53,7 +53,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"{{$randomFullName}}\",\r\n    \"experience\": \"5\",\r\n    \"area\": \"Orthodontics\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"{{$randomFullName}}\",\r\n    \"experience\": \"7\",\r\n    \"area\": \"Orthodontics\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -77,6 +77,28 @@
 				},
 				{
 					"name": "Get All Dentists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"There are some dentists!!\", () => {\r",
+									"    pm.expect(response.count).to.be.above(0);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Add Booking\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -174,7 +196,16 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.environment.set(\"TOKEN\",pm.response.json().token)"
+									"// Fixed the response data access",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.environment.set(\"TOKEN\", response.token);",
+									"",
+									"postman.setNextRequest(\"Login\");"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -193,7 +224,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Film Turner\",\r\n    \"tel\" : \"0811111111\",\r\n    \"email\": \"waranthorn_c@outlook.com\",\r\n    \"password\": \"12345678\",\r\n    \"role\": \"user\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Book\",\r\n    \"tel\" : \"0123456788\",\r\n    \"email\": \"book12535@gmail.com\",\r\n    \"password\": \"12345678\",\r\n    \"role\": \"user\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -222,7 +253,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.environment.set(\"TOKEN\",pm.response.json().token)"
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"TOKEN\", pm.response.json().token)\r",
+									"\r",
+									"postman.setNextRequest(\"Get All Dentists\");"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -241,7 +280,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"waranthorn_c@outlook.com\",\r\n    \"password\": \"12345678\"\r\n}",
+							"raw": "{\r\n    \"email\": \"book12535@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -319,7 +358,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.environment.set(\"TOKEN\",null)"
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"TOKEN\",null)\r",
+									"postman.setNextRequest(\"Admin Login\");"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -360,6 +406,70 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const new_user_id = response.id;\r",
+									"\r",
+									"pm.environment.set(\"TOKEN\", pm.response.json().token)\r",
+									"pm.globals.set(\"global_user_ID\",new_user_id);\r",
+									"\r",
+									"postman.setNextRequest(\"Get All Booking\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"admin@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/auth/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -373,16 +483,16 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// Fixed TypeError by checking for the correct status code\r",
-									"pm.test(\"Status code is 400\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
 									"});\r",
 									"\r",
 									"const response = pm.response.json();\r",
-									"const new_booking_id = response.id;\r",
+									"const new_booking_id = response.data.id;\r",
 									"\r",
-									"// console.log(new_dentist_id);\r",
-									"pm.globals.set(\"global_booking_ID\", new_booking_id);"
+									"pm.globals.set(\"global_booking_ID\",new_booking_id);\r",
+									"\r",
+									"postman.setNextRequest(\"Add Another Booking(For Testing Creating Condition)\");"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -411,7 +521,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"apptDate\":\"2021-02-21T14:51:47.536+00:00\",\r\n    \"user\":\"66222199052adcf8807cf241\"\r\n}",
+							"raw": "{\r\n    \"apptDate\":\"4321-01-15T17:00:00.000Z\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -419,7 +529,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/api/v1/dentists/:dentist_ID/appointments",
+							"raw": "{{URL}}/api/v1/dentists/:dentist_ID/appointments/",
 							"host": [
 								"{{URL}}"
 							],
@@ -428,7 +538,8 @@
 								"v1",
 								"dentists",
 								":dentist_ID",
-								"appointments"
+								"appointments",
+								""
 							],
 							"variable": [
 								{
@@ -442,6 +553,22 @@
 				},
 				{
 					"name": "Get All Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Admin Update Booking\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -475,6 +602,264 @@
 							}
 						},
 						"url": {
+							"raw": "{{URL}}/api/v1/appointments/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"appointments",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const new_booking_id = response.data.id;\r",
+									"\r",
+									"// console.log(new_hospital_id);\r",
+									"pm.globals.set(\"global_booking_ID\",new_booking_id);\r",
+									"\r",
+									"postman.setNextRequest(\"Update Booking\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/v1/appointments/:booking_id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"appointments",
+								":booking_id"
+							],
+							"variable": [
+								{
+									"key": "booking_id",
+									"value": "{{global_booking_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"postman.setNextRequest(\"Delete Booking\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dentist\":\"662147ab8bafb78fb147f7eb\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/appointments/:booking_id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"appointments",
+								":booking_id"
+							],
+							"variable": [
+								{
+									"key": "booking_id",
+									"value": "{{global_booking_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"postman.setNextRequest(\"Add Another Booking(For Testing Admin Update Booking)\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/v1/appointments/:booking_id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"appointments",
+								":booking_id"
+							],
+							"variable": [
+								{
+									"key": "booking_id",
+									"value": "{{global_booking_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Another Booking(For Testing Creating Condition)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"postman.setNextRequest(\"Get One Booking\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"apptDate\":\"4321-01-15T17:00:00.000Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
 							"raw": "{{URL}}/api/v1/dentists/:dentist_ID/appointments/",
 							"host": [
 								"{{URL}}"
@@ -498,44 +883,33 @@
 					"response": []
 				},
 				{
-					"name": "Get One Booking",
+					"name": "Get Own Booking",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": "JSON Type",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/appointments/662234f528a652b4a5c09ff6",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"appointments",
-								"662234f528a652b4a5c09ff6"
-							]
-						}
+						"header": []
 					},
 					"response": []
 				},
 				{
-					"name": "Update Booking",
+					"name": "Admin Update Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"postman.setNextRequest(\"Admin Delete Booking\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -558,7 +932,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"dentist\":\"65f292fd7c8e16eb8817214b\"\r\n}",
+							"raw": "{\r\n    \"dentist\":\"662147ab8bafb78fb147f7eb\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -579,7 +953,7 @@
 							"variable": [
 								{
 									"key": "booking_id",
-									"value": "{{global_dentist_ID}}"
+									"value": "{{global_booking_ID}}"
 								}
 							]
 						}
@@ -587,7 +961,25 @@
 					"response": []
 				},
 				{
-					"name": "Delete Appt",
+					"name": "Admin Delete Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"postman.setNextRequest(null);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -600,9 +992,16 @@
 							]
 						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{URL}}/api/v1/appointments/6623b2dcc80d8ab0fc06e28e",
+							"raw": "{{URL}}/api/v1/appointments/:booking_id",
 							"host": [
 								"{{URL}}"
 							],
@@ -610,7 +1009,87 @@
 								"api",
 								"v1",
 								"appointments",
-								"6623b2dcc80d8ab0fc06e28e"
+								":booking_id"
+							],
+							"variable": [
+								{
+									"key": "booking_id",
+									"value": "{{global_booking_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Another Booking(For Testing Admin Update Booking)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"const new_booking_id = response.data.id;\r",
+									"\r",
+									"pm.globals.set(\"global_booking_ID\",new_booking_id);\r",
+									"postman.setNextRequest(\"Logout\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "JSON Type",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"apptDate\":\"4321-01-15T17:00:00.000Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/v1/dentists/:dentist_ID/appointments/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"dentists",
+								":dentist_ID",
+								"appointments",
+								""
+							],
+							"variable": [
+								{
+									"key": "dentist_ID",
+									"value": "{{global_dentist_ID}}"
+								}
 							]
 						}
 					},
