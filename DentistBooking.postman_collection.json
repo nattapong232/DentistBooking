@@ -23,7 +23,7 @@
 									"const response = pm.response.json();\r",
 									"const new_dentist_id = response.data.id;\r",
 									"\r",
-									"// console.log(new_hospital_id);\r",
+									"// console.log(new_dentist_id);\r",
 									"pm.globals.set(\"global_dentist_ID\",new_dentist_id);"
 								],
 								"type": "text/javascript",
@@ -381,7 +381,7 @@
 									"const response = pm.response.json();\r",
 									"const new_booking_id = response.id;\r",
 									"\r",
-									"// console.log(new_hospital_id);\r",
+									"// console.log(new_dentist_id);\r",
 									"pm.globals.set(\"global_booking_ID\", new_booking_id);"
 								],
 								"type": "text/javascript",
