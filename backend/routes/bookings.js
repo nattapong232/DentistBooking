@@ -1,11 +1,11 @@
 const express = require("express");
 const {
-  getAppointments,
-  getAppointment,
-  addAppointment,
-  updateAppointment,
-  deleteAppointment,
-} = require("../controllers/appointments");
+  getBookings,
+  getBooking,
+  addBooking,
+  updateBooking,
+  deleteBooking,
+} = require("../controllers/bookings");
 
 const router = express.Router({ mergeParams: true });
 
@@ -15,22 +15,22 @@ const { sendConfirmationEmail } = require("../middleware/mail");
 
 router
   .route("/")
-  .get(protect, getAppointments)
+  .get(protect, getBookings)
   .post(
     protect,
     authorize("admin", "user"),
-    addAppointment,
+    addBooking,
     sendConfirmationEmail
   );
 router
   .route("/:id")
-  .get(protect, getAppointment)
+  .get(protect, getBooking)
   .put(
     protect,
     authorize("admin", "user"),
-    updateAppointment,
+    updateBooking,
     sendConfirmationEmail
   )
-  .delete(protect, authorize("admin", "user"), deleteAppointment);
+  .delete(protect, authorize("admin", "user"), deleteBooking);
 
 module.exports = router;

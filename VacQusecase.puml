@@ -4,7 +4,7 @@ actor "User" as user
 rectangle "VacQ System" as VacQSystem {    
     usecase "Register" as register
     usecase "View\nHospitals" as viewHospitals
-    usecase "Manage\nAppointment" as manageAppt
+    usecase "Manage\nBooking" as manageAppt
     usecase "Manage\nHospital" as manageHospital
 }
 

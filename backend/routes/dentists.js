@@ -186,13 +186,13 @@ const {
  *         description: The dentist was not found
  */
 
-const appointmentRouter = require("./appointments");
+const bookingRouter = require("./bookings");
 
 const router = express.Router();
 
 const { protect, authorize } = require("../middleware/auth");
 
-router.use("/:dentistId/appointments", appointmentRouter);
+router.use("/:dentistId/bookings", bookingRouter);
 
 router
   .route(`/`)

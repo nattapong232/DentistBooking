@@ -4,7 +4,7 @@ const connectDB = require("./config/db");
 
 const dentists = require("./routes/dentists");
 const auth = require("./routes/auth");
-const appointments = require("./routes/appointments");
+const bookings = require("./routes/bookings");
 const cookieParser = require("cookie-parser");
 
 const cors = require("cors");
@@ -77,7 +77,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/dentists", dentists);
 app.use("/api/v1/auth", auth);
-app.use("/api/v1/appointments", appointments);
+app.use("/api/v1/bookings", bookings);
 
 const PORT = process.env.PORT || 5001;
 const server = app.listen(

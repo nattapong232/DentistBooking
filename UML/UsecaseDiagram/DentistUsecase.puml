@@ -4,7 +4,7 @@ actor "User" as user
 rectangle "LaewtaeDentalClinicSystem" as LaewtaeDentalClinic {    
     usecase "Register" as register
     usecase "View\nDentists" as viewDentists
-    usecase "Manage\nAppointment" as manageAppt
+    usecase "Manage\nBooking" as manageAppt
     usecase "Manage\nDentist" as manageDentist
 }
 
