@@ -13,18 +13,21 @@ participant "<<controllers>>\n:dentists" as controllersDentists
 participant "<<model>>\n:Dentist" as modelDentist
 database "<<MongoDB>>\n:dentists" as DentistsDatabase
 
-client->server ++:req.get('/dentists/:id')
+client->server ++:req.post('/dentists/:id')
 server->routerDentists ++:app.use('/dentists/:id', dentists)
 routerDentists -> auth ++:protect()
 auth -> jwt ++:verify(token, secret)
-auth <- jwt --:decoded
+auth <-- jwt --:decoded
+routerDentists <-- auth --:next()
 
-routerDentists <- auth --:next()
+routerDentists -> auth ++:authorize("admin")
+routerDentists <-- auth --:next()
+
 routerDentists -> controllersDentists ++:createDentist()
 controllersDentists->modelDentist ++:Dentist.create(req.body);
 modelDentist ->DentistsDatabase ++: DentistSchema
 DentistsDatabase --> modelDentist --: dentist
 controllersDentists <-- modelDentist --: dentist
-controllersDentists->client --:response
+client <- controllersDentists --:response
 
 @enduml
