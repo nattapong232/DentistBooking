@@ -24,7 +24,8 @@ modelBooking -> UsersDatabase ++:UserSchema
 modelBooking <- UsersDatabase --:user
 auth <- modelBooking --:req.user
 routerBookings <- auth --:next()
-routerBookings -> controllersBookings ++:deleteBooking()
+routerBookings -> auth ++:deleteBooking()
+auth -> controllersBookings ++:deleteBooking()
 controllersBookings->modelBooking ++:findById(req.params.id)
 modelBooking ->BookingsDatabase ++: BookingSchema
 BookingsDatabase --> modelBooking --: void
