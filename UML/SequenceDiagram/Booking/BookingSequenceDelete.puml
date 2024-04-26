@@ -14,7 +14,7 @@ participant "<<model>>\n:Booking" as modelBooking
 database "<<MongoDB>>\n:users" as UsersDatabase
 database "<<MongoDB>>\n:bookings" as BookingsDatabase
 
-client->server ++:req.get('/bookings/:id')
+client->server ++:req.delete('/bookings/:id')
 server->routerBookings ++:app.use('/bookings/:id', bookings)
 routerBookings -> auth ++:protect()
 auth -> jwt ++:verify(token, secret)

@@ -6,6 +6,7 @@ title "Manage Booking (POST)"
 
 participant "Client" as client
 participant "<<javaScript>>\n:server" as server
+participant "<<middleware>>\n:mail" as mail
 participant "<<router>>\n:bookings" as routerBookings
 participant "<<middleware>>\n:auth" as auth
 participant "<<service>>\n:jwt" as jwt
@@ -14,21 +15,25 @@ participant "<<model>>\n:Booking" as modelBooking
 database "<<MongoDB>>\n:users" as UsersDatabase
 database "<<MongoDB>>\n:bookings" as BookingsDatabase
 
-client->server ++:req.get('/dentists/:dentist_ID/bookings/')
+client->server ++:req.post('/dentists/:dentist_ID/bookings/')
 server->routerBookings ++:app.use('/dentists/:dentist_ID/bookings/', bookings)
 routerBookings -> auth ++:protect()
 auth -> jwt ++:verify(token, secret)
 auth <- jwt --:decoded
 auth -> modelBooking ++:findById(decoded, id)
 modelBooking -> UsersDatabase ++:UserSchema
-modelBooking <- UsersDatabase --:user
-auth <- modelBooking --:req.user
+modelBooking <-- UsersDatabase --:user
+auth <-- modelBooking --:req.user
 routerBookings <- auth --:next()
-routerBookings -> controllersBookings ++:addBooking()
+routerBookings -> auth ++:addBooking()
+auth -> controllersBookings ++:addBooking()
 controllersBookings->modelBooking ++:Booking.create({apptDate: req.body.apptDate, user: req.user.id, dentist: req.params.dentistId,});
 modelBooking ->BookingsDatabase ++: BookingSchema
 BookingsDatabase --> modelBooking --: booking
-controllersBookings <-- modelBooking --:booking
+controllersBookings <-- modelBooking :booking
+routerBookings <-- controllersBookings --:booking
+mail <-- routerBookings ++:sendConfirmationEmail
+client <- mail --:sendConfirmationEmail
 controllersBookings->client --:response
 
 @enduml
