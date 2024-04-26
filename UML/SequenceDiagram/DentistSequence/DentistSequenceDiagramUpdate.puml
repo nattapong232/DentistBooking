@@ -1,0 +1,35 @@
+@startuml Manage Dentist (PUT)
+
+header Laewtae Dental Clinic Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Dentist (PUT)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:dentists" as routerDentists
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
+participant "<<controllers>>\n:dentists" as controllersDentists
+participant "<<model>>\n:Dentist" as modelDentist
+database "<<MongoDB>>\n:dentists" as DentistsDatabase
+
+client->server ++:req.update('/dentists/:id')
+server->routerDentists ++:app.use('/dentists/:id', dentists)
+routerDentists -> auth ++:protect()
+auth -> jwt ++:verify(token, secret)
+auth <-- jwt --:decoded
+routerDentists <-- auth --:next()
+
+routerDentists -> auth ++:authorize("admin")
+routerDentists <-- auth --:next()
+
+routerDentists -> controllersDentists ++:updateDentist()
+
+controllersDentists->modelDentist ++:Dentist.findByIdAndUpdate(req.params.id, req.body)
+modelDentist ->DentistsDatabase ++: DentistSchema
+modelDentist <-- DentistsDatabase --: dentist
+controllersDentists <-- modelDentist --: dentist
+
+client <- controllersDentists --:response
+
+@enduml
