@@ -16,12 +16,7 @@ const { sendConfirmationEmail } = require("../middleware/mail");
 router
   .route("/")
   .get(protect, getBookings)
-  .post(
-    protect,
-    authorize("admin", "user"),
-    addBooking,
-    sendConfirmationEmail
-  );
+  .post(protect, authorize("admin", "user"), addBooking, sendConfirmationEmail);
 router
   .route("/:id")
   .get(protect, getBooking)

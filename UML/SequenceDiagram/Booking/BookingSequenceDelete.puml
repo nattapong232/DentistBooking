@@ -24,6 +24,10 @@ modelBooking -> UsersDatabase ++:UserSchema
 modelBooking <- UsersDatabase --:user
 auth <- modelBooking --:req.user
 routerBookings <- auth --:next()
+
+routerBookings -> auth ++:authorize("admin",""user)
+routerBookings <-- auth --:next()
+
 routerBookings -> auth ++:deleteBooking()
 auth -> controllersBookings ++:deleteBooking()
 controllersBookings->modelBooking ++:findById(req.params.id)

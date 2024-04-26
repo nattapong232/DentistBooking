@@ -25,6 +25,10 @@ modelBooking -> UsersDatabase ++:UserSchema
 modelBooking <-- UsersDatabase --:user
 auth <-- modelBooking --:req.user
 routerBookings <- auth --:next()
+
+routerBookings -> auth ++:authorize("admin",""user)
+routerBookings <-- auth --:next()
+
 routerBookings -> auth ++:addBooking()
 auth -> controllersBookings ++:addBooking()
 controllersBookings->modelBooking ++:Booking.create({apptDate: req.body.apptDate, user: req.user.id, dentist: req.params.dentistId,});
