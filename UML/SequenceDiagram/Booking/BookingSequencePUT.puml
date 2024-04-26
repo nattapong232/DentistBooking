@@ -7,17 +7,28 @@ title "Manage Booking (PUT)"
 participant "Client" as client
 participant "<<javaScript>>\n:server" as server
 participant "<<router>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
 participant "<<controllers>>\n:bookings" as controllersBookings
 participant "<<model>>\n:Booking" as modelBooking
+database "<<MongoDB>>\n:users" as UsersDatabase
 database "<<MongoDB>>\n:bookings" as BookingsDatabase
 
-client->server ++:req.put('/bookings/:id')
+client->server ++:req.get('/bookings/:id')
 server->routerBookings ++:app.use('/bookings/:id', bookings)
+routerBookings -> auth ++:protect()
+auth -> jwt ++:verify(token, secret)
+auth <- jwt --:decoded
+auth -> modelBooking ++:findById(decoded, id)
+modelBooking -> UsersDatabase ++:UserSchema
+modelBooking <- UsersDatabase --:user
+auth <- modelBooking --:req.user
+routerBookings <- auth --:next()
 routerBookings -> controllersBookings ++:updateBooking()
-controllersBookings->modelBooking ++:findByIdAndUpdate(req.params.id)
+controllersBookings->modelBooking ++:findById(req.params.id)
 modelBooking ->BookingsDatabase ++: BookingSchema
-BookingsDatabase --> modelBooking --: updatedBooking
-controllersBookings <-- modelBooking --:updatedBooking
+BookingsDatabase --> modelBooking --: booking
+controllersBookings <-- modelBooking --:booking
 controllersBookings->client --:response
 
 @enduml

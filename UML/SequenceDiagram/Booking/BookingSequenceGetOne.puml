@@ -28,7 +28,7 @@ routerBookings -> controllersBookings ++:getBooking()
 controllersBookings->modelBooking ++:findById(req.params.id)
 modelBooking ->BookingsDatabase ++: BookingSchema
 BookingsDatabase --> modelBooking --: booking
-controllersBookings <-- modelBooking --:req.booking
+controllersBookings <-- modelBooking --:booking
 controllersBookings->client --:response
 
 @enduml

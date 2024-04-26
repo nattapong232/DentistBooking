@@ -7,14 +7,21 @@ title "Manage Booking (GET ALL)"
 participant "Client" as client
 participant "<<javaScript>>\n:server" as server
 participant "<<router>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as auth
+participant "<<service>>\n:jwt" as jwt
 participant "<<controllers>>\n:bookings" as controllersBookings
 participant "<<model>>\n:Booking" as modelBooking
 database "<<MongoDB>>\n:bookings" as BookingsDatabase
 
-client->server ++:req.get('/bookings')
-server->routerBookings ++:app.use('/bookings', bookings)
+client->server ++:req.get('/bookings/')
+server->routerBookings ++:app.use('/bookings/', bookings)
+routerBookings -> auth ++:protect()
+auth -> jwt ++:verify(token, secret)
+auth <- jwt --:decoded
+
+routerBookings <- auth --:next()
 routerBookings -> controllersBookings ++:getBookings()
-controllersBookings->modelBooking ++:findAll()
+controllersBookings->modelBooking ++:find({ user: req.user.id })
 modelBooking ->BookingsDatabase ++: BookingSchema
 BookingsDatabase --> modelBooking --: bookings
 controllersBookings <-- modelBooking --:bookings
